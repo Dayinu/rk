@@ -1,4 +1,4 @@
-#include "RenderTextProcessor.h"
+#include "Render/RenderTextProcessor.h"
 
 void RenderTextProcessor::setOutputFormat(std::unique_ptr<RenderListStrategy>&& strategy) {
     m_format = std::move(strategy);
