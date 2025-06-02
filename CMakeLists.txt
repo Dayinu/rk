@@ -10,7 +10,6 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 set(INCLUDE_DIR include)
 set(SRC_DIR src)
 set(TEST_DIR test)
-set(RESOURCES_DIR Resources)
 
 # Основная библиотека
 add_library(StrategyPatternLib STATIC
@@ -42,14 +41,15 @@ target_link_libraries(StrategyPatternApp PRIVATE StrategyPatternLib)
 
 # Тесты
 enable_testing()
+find_package(GTest REQUIRED)
+include(GoogleTest)
 
 # Используем FetchContent для управления зависимостями GTest
 include(FetchContent)
-
 FetchContent_Declare(
   googletest
   GIT_REPOSITORY https://github.com/google/googletest.git
-  GIT_TAG release-1.14.0  # Используем стабильную версию
+  GIT_TAG v1.14.0  # Исправленный тег (было release-1.14.0)
 )
 FetchContent_MakeAvailable(googletest)
 
@@ -59,7 +59,6 @@ target_link_libraries(StrategyPatternTests
     PRIVATE 
     StrategyPatternLib 
     GTest::gtest_main
-    GTest::gmock
 )
 
 # Добавление тестов в CTest
@@ -72,10 +71,9 @@ if(MSVC)
     target_compile_definitions(StrategyPatternTests PRIVATE _CRT_SECURE_NO_WARNINGS)
 endif()
 
-# Установка приложения и ресурсов
 install(TARGETS StrategyPatternApp
         RUNTIME DESTINATION bin
         PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
 
-install(DIRECTORY ${RESOURCES_DIR}/
+install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/Resources/
         DESTINATION share/strategy-pattern/Resources)
