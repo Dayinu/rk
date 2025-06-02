@@ -6,9 +6,9 @@
 #include <string>
 #include <memory>
 
-#include "PaymentStrategy.h"
-#include "CreditCard.h"
-#include "PayByCreditCard.h"
+#include "Payment/PaymentStrategy.h"
+#include "Payment/CreditCard.h"
+#include "Payment/PayByCreditCard.h"
 
 /**
  * c'tor(s) / d'tor
