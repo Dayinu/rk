@@ -8,29 +8,23 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 
 # Настройка структуры каталогов
 set(INCLUDE_DIR include)
-set(PAYMENT_DIR ${INCLUDE_DIR}/Payment)
-set(RENDER_DIR ${INCLUDE_DIR}/Render)
-set(STRATEGY_DIR ${INCLUDE_DIR}/Strategy)
-
 set(SRC_DIR src)
-set(PAYMENT_SRC_DIR ${SRC_DIR}/Payment)
-set(RENDER_SRC_DIR ${SRC_DIR}/Render)
-set(STRATEGY_SRC_DIR ${SRC_DIR}/Strategy)
+set(TEST_DIR test)
 
 # Основная библиотека
 add_library(StrategyPatternLib STATIC
-    ${PAYMENT_SRC_DIR}/CreditCard.cpp
-    ${PAYMENT_SRC_DIR}/Order.cpp
-    ${PAYMENT_SRC_DIR}/PayByCreditCard.cpp
-    ${PAYMENT_SRC_DIR}/PayByPayPal.cpp
-    ${RENDER_SRC_DIR}/RenderHtmlListStrategy.cpp
-    ${RENDER_SRC_DIR}/RenderMarkdownListStrategy.cpp
-    ${RENDER_SRC_DIR}/RenderTextProcessor.cpp
-    ${STRATEGY_SRC_DIR}/ConceptualExample.cpp
-    ${STRATEGY_SRC_DIR}/ConceptualExampleModern.cpp
-    ${STRATEGY_SRC_DIR}/RealWorldExample.cpp
-    ${STRATEGY_SRC_DIR}/RealWorldExampleModern.cpp
-    ${STRATEGY_SRC_DIR}/StaticStrategyExample.cpp
+    ${SRC_DIR}/Payment/CreditCard.cpp
+    ${SRC_DIR}/Payment/Order.cpp
+    ${SRC_DIR}/Payment/PayByCreditCard.cpp
+    ${SRC_DIR}/Payment/PayByPayPal.cpp
+    ${SRC_DIR}/Render/RenderHtmlListStrategy.cpp
+    ${SRC_DIR}/Render/RenderMarkdownListStrategy.cpp
+    ${SRC_DIR}/Render/RenderTextProcessor.cpp
+    ${SRC_DIR}/Strategy/ConceptualExample.cpp
+    ${SRC_DIR}/Strategy/ConceptualExampleModern.cpp
+    ${SRC_DIR}/Strategy/RealWorldExample.cpp
+    ${SRC_DIR}/Strategy/RealWorldExampleModern.cpp
+    ${SRC_DIR}/Strategy/StaticStrategyExample.cpp
 )
 
 # Пути для заголовков
@@ -50,7 +44,8 @@ enable_testing()
 find_package(GTest REQUIRED)
 include(GoogleTest)
 
-add_executable(StrategyPatternTests tests.cpp)
+# Создаем тестовый исполняемый файл
+add_executable(StrategyPatternTests ${TEST_DIR}/tests.cpp)
 target_link_libraries(StrategyPatternTests 
     PRIVATE 
     StrategyPatternLib 
