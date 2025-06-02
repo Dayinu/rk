@@ -5,7 +5,7 @@
 #include <iostream>
 #include <string>
 
-#include "CreditCard.h"
+#include "Payment/CreditCard.h"
 
 /**
  * c'tor(s) / d'tor
