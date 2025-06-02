@@ -1,145 +1,68 @@
-// tests/AllTests.cpp
-#include "CreditCard.h"
-#include "Order.h"
-#include "PayByCreditCard.h"
-#include "PayByPayPal.h"
-#include "RenderHtmlListStrategy.h"
-#include "RenderMarkdownListStrategy.h"
-#include "RenderTextProcessor.h"
-#include <cassert>
-#include <iostream>
-#include <memory>
-#include <sstream>
-#include <string>
+cmake_minimum_required(VERSION 3.15)
+project(StrategyPattern)
 
-// Тесты для CreditCard
-void testCreditCard() {
-    CreditCard card("1234567812345678", "12/24", "123");
-    card.setValid(true);
-    
-    // Проверка валидации
-    assert(card.isValid() == true);
-    
-    // Проверка списания средств
-    assert(card.charge(1000) == true);
-    assert(card.charge(4000) == true);
-    assert(card.charge(1) == false); // Должно быть недостаточно средств
-    
-    std::cout << "CreditCard tests passed!\n";
-}
+# Требуем поддержку C++23
+set(CMAKE_CXX_STANDARD 23)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
 
-// Тесты для Order
-void testOrder() {
-    Order order;
-    
-    // Проверка начального состояния
-    assert(order.getTotalCost() == 0);
-    assert(order.isClosed() == false);
-    
-    // Добавление стоимости
-    order.addToTotalCost(100);
-    assert(order.getTotalCost() == 100);
-    
-    order.addToTotalCost(200);
-    assert(order.getTotalCost() == 300);
-    
-    // Закрытие заказа
-    order.setClosed();
-    assert(order.isClosed() == true);
-    
-    std::cout << "Order tests passed!\n";
-}
+# Настройка структуры каталогов
+set(INCLUDE_DIR include)
+set(PAYMENT_DIR ${INCLUDE_DIR}/Payment)
+set(RENDER_DIR ${INCLUDE_DIR}/Render)
+set(STRATEGY_DIR ${INCLUDE_DIR}/Strategy)
 
-// Тесты для PayByCreditCard
-void testPayByCreditCard() {
-    PayByCreditCard payment;
-    
-    // Тест сбора данных (симуляция ввода)
-    std::istringstream input("1234567812345678\n12/24\n123\n");
-    std::cin.rdbuf(input.rdbuf());
-    
-    payment.collectPaymentDetails();
-    assert(payment.pay(1000) == true);
-    assert(payment.pay(5000) == false); // Недостаточно средств
-    
-    std::cout << "PayByCreditCard tests passed!\n";
-}
+set(SRC_DIR src)
+set(PAYMENT_SRC_DIR ${SRC_DIR}/Payment)
+set(RENDER_SRC_DIR ${SRC_DIR}/Render)
+set(STRATEGY_SRC_DIR ${SRC_DIR}/Strategy)
 
-// Тесты для PayByPayPal
-void testPayByPayPal() {
-    PayByPayPal payment;
-    
-    // Тест сбора данных (симуляция ввода)
-    std::istringstream input("hans@web.de\nsecret\n");
-    std::cin.rdbuf(input.rdbuf());
-    
-    payment.collectPaymentDetails();
-    assert(payment.pay(100) == true);
-    
-    std::cout << "PayByPayPal tests passed!\n";
-}
+# Основная библиотека
+add_library(StrategyPatternLib STATIC
+    ${PAYMENT_SRC_DIR}/CreditCard.cpp
+    ${PAYMENT_SRC_DIR}/Order.cpp
+    ${PAYMENT_SRC_DIR}/PayByCreditCard.cpp
+    ${PAYMENT_SRC_DIR}/PayByPayPal.cpp
+    ${RENDER_SRC_DIR}/RenderHtmlListStrategy.cpp
+    ${RENDER_SRC_DIR}/RenderMarkdownListStrategy.cpp
+    ${RENDER_SRC_DIR}/RenderTextProcessor.cpp
+    ${STRATEGY_SRC_DIR}/ConceptualExample.cpp
+    ${STRATEGY_SRC_DIR}/ConceptualExampleModern.cpp
+    ${STRATEGY_SRC_DIR}/RealWorldExample.cpp
+    ${STRATEGY_SRC_DIR}/RealWorldExampleModern.cpp
+    ${STRATEGY_SRC_DIR}/StaticStrategyExample.cpp
+)
 
-// Тесты для RenderHtmlListStrategy
-void testRenderHtmlListStrategy() {
-    RenderHtmlListStrategy strategy;
-    std::ostringstream oss;
-    
-    strategy.start(oss);
-    strategy.add(oss, "Item1");
-    strategy.add(oss, "Item2");
-    strategy.end(oss);
-    
-    std::string expected = "<ul>\n  <li>Item1</li>\n  <li>Item2</li>\n</ul>\n";
-    assert(oss.str() == expected);
-    
-    std::cout << "RenderHtmlListStrategy tests passed!\n";
-}
+# Пути для заголовков
+target_include_directories(StrategyPatternLib PUBLIC
+    ${CMAKE_CURRENT_SOURCE_DIR}/${INCLUDE_DIR}
+)
 
-// Тесты для RenderMarkdownListStrategy
-void testRenderMarkdownListStrategy() {
-    RenderMarkdownListStrategy strategy;
-    std::ostringstream oss;
-    
-    strategy.add(oss, "Item1");
-    strategy.add(oss, "Item2");
-    
-    std::string expected = " * Item1\n * Item2\n";
-    assert(oss.str() == expected);
-    
-    std::cout << "RenderMarkdownListStrategy tests passed!\n";
-}
+# Основное приложение
+add_executable(StrategyPatternApp
+    ${SRC_DIR}/ECommerceApp.cpp
+    ${SRC_DIR}/Program.cpp
+)
+target_link_libraries(StrategyPatternApp PRIVATE StrategyPatternLib)
 
-// Тесты для RenderTextProcessor
-void testRenderTextProcessor() {
-    RenderTextProcessor processor;
-    
-    // Тест HTML рендеринга
-    processor.setOutputFormat(std::make_unique<RenderHtmlListStrategy>());
-    processor.appendList({"Apple", "Banana"});
-    std::string htmlResult = processor.toString();
-    std::string htmlExpected = "<ul>\n  <li>Apple</li>\n  <li>Banana</li>\n</ul>\n";
-    assert(htmlResult == htmlExpected);
-    
-    // Тест Markdown рендеринга
-    processor.clear();
-    processor.setOutputFormat(std::make_unique<RenderMarkdownListStrategy>());
-    processor.appendList({"Orange", "Grape"});
-    std::string mdResult = processor.toString();
-    std::string mdExpected = " * Orange\n * Grape\n";
-    assert(mdResult == mdExpected);
-    
-    std::cout << "RenderTextProcessor tests passed!\n";
-}
+# Тесты
+enable_testing()
+find_package(GTest REQUIRED)
+include(GoogleTest)
 
-int main() {
-    testCreditCard();
-    testOrder();
-    testPayByCreditCard();
-    testPayByPayPal();
-    testRenderHtmlListStrategy();
-    testRenderMarkdownListStrategy();
-    testRenderTextProcessor();
-    
-    std::cout << "\nAll tests passed successfully!\n";
-    return 0;
-}
+add_executable(StrategyPatternTests tests.cpp)
+target_link_libraries(StrategyPatternTests 
+    PRIVATE 
+    StrategyPatternLib 
+    GTest::gtest_main
+)
+
+# Добавление тестов в CTest
+gtest_discover_tests(StrategyPatternTests)
+
+# Для Windows
+if(MSVC)
+    target_compile_definitions(StrategyPatternLib PRIVATE _CRT_SECURE_NO_WARNINGS)
+    target_compile_definitions(StrategyPatternApp PRIVATE _CRT_SECURE_NO_WARNINGS)
+    target_compile_definitions(StrategyPatternTests PRIVATE _CRT_SECURE_NO_WARNINGS)
+endif()
