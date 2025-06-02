@@ -6,8 +6,8 @@
 #include <string>
 #include <memory>
 
-#include "PaymentStrategy.h"
-#include "Order.h"
+#include "Payment/PaymentStrategy.h"
+#include "Payment/Order.h"
 
 /**
  * class Order:
