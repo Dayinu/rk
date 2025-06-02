@@ -6,8 +6,8 @@
 #include <string>
 #include <map>
 
-#include "PaymentStrategy.h"
-#include "PayByPayPal.h"
+#include "Payment/PaymentStrategy.h"
+#include "Payment/PayByPayPal.h"
 
 /**
  * c'tor(s) / d'tor
