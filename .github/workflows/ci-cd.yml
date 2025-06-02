@@ -1,0 +1,60 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build-test-package:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y build-essential cmake libgtest-dev google-mock libgmock-dev
+        sudo apt-get install -y dpkg-dev debhelper
+
+    - name: Configure CMake
+      run: cmake -B build -DCMAKE_BUILD_TYPE=Release
+
+    - name: Build project
+      run: cmake --build build --config Release
+
+    - name: Run tests
+      run: cd build && ctest --output-on-failure
+
+    - name: Create DEB package
+      run: |
+        mkdir -p package/usr/bin
+        cp build/StrategyPatternApp package/usr/bin/
+        cp -r Resources package/usr/share/strategy-pattern/
+        
+        # Create DEB control files
+        mkdir -p package/DEBIAN
+        cat > package/DEBIAN/control <<DEB_EOF
+        Package: strategy-pattern
+        Version: 1.0.0
+        Section: utils
+        Priority: optional
+        Architecture: amd64
+        Maintainer: Your Name <your.email@example.com>
+        Description: Strategy Pattern Example Application
+         This package contains the executable and resources for the Strategy Pattern example.
+        DEB_EOF
+        
+        # Build the package
+        dpkg-deb --build package strategy-pattern.deb
+
+    - name: Upload artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: strategy-pattern-package
+        path: |
+          strategy-pattern.deb
+          build/StrategyPatternApp
