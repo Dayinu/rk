@@ -7,11 +7,11 @@
 #include <map>
 #include <memory>
 
-#include "CreditCard.h"
-#include "PaymentStrategy.h"
-#include "PayByPayPal.h"
-#include "PayByCreditCard.h"
-#include "Order.h"
+#include "Payment/CreditCard.h"
+#include "Payment/PaymentStrategy.h"
+#include "Payment/PayByPayPal.h"
+#include "Payment/PayByCreditCard.h"
+#include "Payment/Order.h"
 
 void test_ecommerce_app()
 {
