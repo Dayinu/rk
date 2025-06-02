@@ -13,12 +13,29 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
+      with:
+        fetch-depth: 0  # Для получения истории тегов
+
+    - name: Get version
+      id: get_version
+      run: echo "version=$(git describe --tags --always)" >> $GITHUB_OUTPUT
 
     - name: Install dependencies
       run: |
         sudo apt-get update
-        sudo apt-get install -y build-essential cmake libgtest-dev google-mock libgmock-dev
-        sudo apt-get install -y dpkg-dev debhelper
+        sudo apt-get install -y build-essential cmake libgtest-dev libgmock-dev dpkg-dev debhelper lintian
+        
+        # Build and install gtest
+        cd /usr/src/gtest
+        sudo cmake CMakeLists.txt
+        sudo make
+        sudo cp lib/*.a /usr/lib
+        
+        # Build and install gmock
+        cd /usr/src/gmock
+        sudo cmake CMakeLists.txt
+        sudo make
+        sudo cp lib/*.a /usr/lib
 
     - name: Configure CMake
       run: cmake -B build -DCMAKE_BUILD_TYPE=Release
@@ -33,26 +50,32 @@ jobs:
       run: |
         mkdir -p package/usr/bin
         cp build/StrategyPatternApp package/usr/bin/
+        mkdir -p package/usr/share/strategy-pattern
         cp -r Resources package/usr/share/strategy-pattern/
         
         # Create DEB control files
         mkdir -p package/DEBIAN
-        cat > package/DEBIAN/control <<DEB_EOF
+        cat > package/DEBIAN/control <<EOF
         Package: strategy-pattern
-        Version: 1.0.0
+        Version: ${{ steps.get_version.outputs.version }}
         Section: utils
         Priority: optional
         Architecture: amd64
         Maintainer: Your Name <your.email@example.com>
         Description: Strategy Pattern Example Application
          This package contains the executable and resources for the Strategy Pattern example.
-        DEB_EOF
+        EOF
         
         # Build the package
         dpkg-deb --build package strategy-pattern.deb
 
+    - name: Verify DEB package
+      run: |
+        dpkg --contents strategy-pattern.deb
+        lintian strategy-pattern.deb || true  # Продолжить даже если есть предупреждения
+
     - name: Upload artifacts
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: strategy-pattern-package
         path: |
