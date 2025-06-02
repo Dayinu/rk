@@ -61,3 +61,10 @@ if(MSVC)
     target_compile_definitions(StrategyPatternApp PRIVATE _CRT_SECURE_NO_WARNINGS)
     target_compile_definitions(StrategyPatternTests PRIVATE _CRT_SECURE_NO_WARNINGS)
 endif()
+
+install(TARGETS StrategyPatternApp
+        RUNTIME DESTINATION bin
+        PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
+
+install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/Resources/
+        DESTINATION share/strategy-pattern/Resources)
