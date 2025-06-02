@@ -24,13 +24,6 @@ jobs:
       run: |
         sudo apt-get update
         sudo apt-get install -y build-essential cmake dpkg-dev debhelper lintian
-        sudo apt-get install -y libgtest-dev libgmock-dev
-        
-        # Сборка и установка Google Test и Google Mock
-        cd /usr/src/googletest
-        sudo cmake -B build -DBUILD_GMOCK=ON -DINSTALL_GTEST=ON
-        sudo cmake --build build
-        sudo cmake --install build
 
     - name: Configure CMake
       run: cmake -B build -DCMAKE_BUILD_TYPE=Release
@@ -63,6 +56,11 @@ jobs:
         
         # Build the package
         dpkg-deb --build package strategy-pattern.deb
+
+    - name: Verify DEB package
+      run: |
+        dpkg --contents strategy-pattern.deb
+        lintian strategy-pattern.deb || true
 
     - name: Upload artifacts
       uses: actions/upload-artifact@v4
