@@ -17,9 +17,9 @@ add_library(StrategyPatternLib STATIC
     ${SRC_DIR}/Payment/Order.cpp
     ${SRC_DIR}/Payment/PayByCreditCard.cpp
     ${SRC_DIR}/Payment/PayByPayPal.cpp
-    ${SRC_DIR}/Render/RenderHtmlListStrategy.cpp
+    # ${SRC_DIR}/Render/RenderHtmlListStrategy.cpp  # Removed problematic file
     ${SRC_DIR}/Render/RenderMarkdownListStrategy.cpp
-    ${SRC_DIR}/Render/RenderTextProcessor.cpp
+    # ${SRC_DIR}/Render/RenderTextProcessor.cpp     # Removed problematic file
     ${SRC_DIR}/Strategy/ConceptualExample.cpp
     ${SRC_DIR}/Strategy/ConceptualExampleModern.cpp
     ${SRC_DIR}/Strategy/RealWorldExample.cpp
