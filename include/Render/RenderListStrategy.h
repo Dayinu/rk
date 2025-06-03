@@ -2,6 +2,11 @@
 // RenderListStrategy.h
 // ===========================================================================
 
+#pragma once
+
+#include <sstream> // Добавлено
+#include <string>  // Добавлено
+
 class RenderListStrategy
 {
 public:
