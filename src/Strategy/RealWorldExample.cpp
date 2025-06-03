@@ -3,7 +3,7 @@
 // ===========================================================================
 
 #include <memory>
-#include <print>
+#include <iostream>  // Заменяем <print> на <iostream>
 #include <string>
 #include <vector>
 
@@ -11,25 +11,14 @@ namespace StrategyRealWorldExample {
 
     // =======================================================================
 
-    /**
-     * Common Base Interface for all visual widgets. 
-     * This interface is not related directly to the Strategy Design Pattern.
-     */
-    
     class Shape
     {
     public:
         virtual ~Shape() = default;
-
         virtual void draw() const = 0;
     };
 
     // =======================================================================
-
-    /**
-     * The DrawCircleStrategy and DrawRectangleStrategy interface declare operations
-     * common to all supported versions of some drawing algorithms.
-     */
 
     class Circle;
     class Rectangle;
@@ -37,26 +26,19 @@ namespace StrategyRealWorldExample {
     class DrawCircleStrategy
     {
     public:
-        virtual ~DrawCircleStrategy() {}
-
+        virtual ~DrawCircleStrategy() = default;
         virtual void draw(const Circle&) const = 0;
     };
 
     class DrawRectangleStrategy
     {
     public:
-        virtual ~DrawRectangleStrategy() {}
-
+        virtual ~DrawRectangleStrategy() = default;
         virtual void draw(const Rectangle&) const = 0;
     };
 
     // ===========================================================================
 
-    /**
-     * The Circle uses the DrawCircleStrategy interface to call the algorithm
-     * defined by some DrawCircleStrategy support.
-     */
-    
     class Circle : public Shape
     {
     public:
@@ -79,7 +61,7 @@ namespace StrategyRealWorldExample {
 
     private:
         std::unique_ptr<DrawCircleStrategy> m_drawer;
-        double                              m_radius;
+        double m_radius;
     };
 
     class Rectangle : public Shape
@@ -105,55 +87,37 @@ namespace StrategyRealWorldExample {
 
     private:
         std::unique_ptr<DrawRectangleStrategy> m_drawer;
-        double                                 m_width;
-        double                                 m_height;
+        double m_width;
+        double m_height;
     };
 
     // ===========================================================================
 
-    /**
-     * Concrete strategies implement the algorithm
-     * while following the Base Strategy interface.
-     * The interface makes them interchangeable in the clients (Visual Widgets).
-     */
-
     class Win32CircleStrategy : public DrawCircleStrategy
     {
     public:
-        explicit Win32CircleStrategy() {};
-
         void draw(const Circle& circle) const override {
-            std::println("Drawing a Circle using the Win32 Framework");
+            std::cout << "Drawing a Circle (radius=" 
+                      << circle.radius() 
+                      << ") using Win32 API\n";
         }
-
-    private:
-        /* Drawing related data members, e.g. colors, textures, ... */
     };
 
     class Win32RectangleStrategy : public DrawRectangleStrategy
     {
     public:
-        explicit Win32RectangleStrategy() {};
-
-        void draw(Rectangle const& rectangle) const override {
-            std::println("Drawing a Rectangle using the Rectangle Framework");
+        void draw(const Rectangle& rectangle) const override {
+            std::cout << "Drawing a Rectangle (" 
+                      << rectangle.width() << "x" << rectangle.height() 
+                      << ") using Win32 API\n";
         }
-
-    private:
-        /* Drawing related data members, e.g. colors, textures, ... */
     };
 
     // ===========================================================================
 
-    /**
-     * The client code picks a concrete strategy and passes it to the context.
-     * The client should be aware of the differences between strategies
-     * in order to make the right choice.
-     */
-
     static void clientCode(const std::vector<std::unique_ptr<Shape>>& shapes)
     {
-        for (auto const& shape : shapes)
+        for (const auto& shape : shapes)
         {
             shape->draw();
         }
@@ -163,41 +127,25 @@ namespace StrategyRealWorldExample {
 void test_realworld_example()
 {
     using namespace StrategyRealWorldExample;
-
     using Shapes = std::vector<std::unique_ptr<Shape>>;
 
-    Shapes shapes{};
+    Shapes shapes;
 
-    // creating strategy objects based upon the Win32 drawing strategy
-    std::unique_ptr<DrawCircleStrategy> strategy1 {
-        std::make_unique<Win32CircleStrategy>() 
-    };
+    // Создаем фигуры напрямую с стратегиями
+    shapes.push_back(std::make_unique<Circle>(
+        3.0, 
+        std::make_unique<Win32CircleStrategy>())
+    );
 
-    std::unique_ptr<DrawRectangleStrategy> strategy2{
-        std::make_unique<Win32RectangleStrategy>() 
-    };
+    shapes.push_back(std::make_unique<Rectangle>(
+        4.0, 5.0,
+        std::make_unique<Win32RectangleStrategy>())
+    );
 
-    std::unique_ptr<DrawCircleStrategy> strategy3{
-        std::make_unique<Win32CircleStrategy>()
-    };
-
-    // creating visual widgets using strategy objects
-    std::unique_ptr<Circle> upc{ std::make_unique<Circle>(
-        3.0, std::move(strategy1))
-    };
-
-    std::unique_ptr<Rectangle> upr{ std::make_unique<Rectangle>(
-        4.0, 5.0, std::move(strategy2))
-    };
-
-    std::unique_ptr<Circle> upc2{ std::make_unique<Circle>(
-        6.0, std::move(strategy3))
-    };
-
-    // filling container with visual widgets
-    shapes.push_back(std::move(upc));
-    shapes.push_back(std::move(upr));
-    shapes.push_back(std::move(upc2));
+    shapes.push_back(std::make_unique<Circle>(
+        6.0,
+        std::make_unique<Win32CircleStrategy>())
+    );
 
     clientCode(shapes);
 }
