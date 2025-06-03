@@ -14,10 +14,6 @@
 #include "Render/RenderMarkdownListStrategy.h"
 // #include "Render/RenderTextProcessor.h"      // Removed problematic include
 
-// Strategy Components
-#include "Strategy/ConceptualExample.h"
-#include "Strategy/RealWorldExample.h"
-#include "Strategy/StaticStrategyPattern.h"
 
 // Тест для CreditCard
 TEST(PaymentTests, CreditCard) {
