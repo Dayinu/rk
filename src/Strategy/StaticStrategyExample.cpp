@@ -5,7 +5,6 @@
 #include <initializer_list>
 #include <iostream>
 #include <memory>
-#include <print>
 #include <sstream>
 #include <string>
 
@@ -98,13 +97,15 @@ void test_dynamic_strategy_example ()
     TextProcessor tp{};
     tp.set_output_format(Format::Markdown);
     tp.append_list({ "foo", "bar", "baz" });
-    std::println("{}", tp.str());
+    // Заменено std::println на std::cout
+    std::cout << tp.str() << std::endl;
 
     // html
     tp.clear();
     tp.set_output_format(Format::Html);
     tp.append_list({ "foo", "bar", "baz" });
-    std::println("{}", tp.str());
+    // Заменено std::println на std::cout
+    std::cout << tp.str() << std::endl;
 }
 
 // =====================================================================
@@ -175,12 +176,14 @@ void test_static_strategy_example ()
     // Markdown
     TextProcessorEx<MarkdownListStrategyEx> tp1{};
     tp1.append_list({ "foo", "bar", "baz" });
-    std::println("{}", tp1.str());
+    // Заменено std::println на std::cout
+    std::cout << tp1.str() << std::endl;
 
     // <Html
     TextProcessorEx<HtmlListStrategyEx> tp2{};
     tp2.append_list({ "foo", "bar", "baz" });
-    std::println("{}", tp2.str());
+    // Заменено std::println на std::cout
+    std::cout << tp2.str() << std::endl;
 }
 
 // ===========================================================================
