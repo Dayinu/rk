@@ -2,6 +2,7 @@
 #include "Render/RenderListStrategy.h" // Полное определение базового класса
 
 // Определения специальных функций
+RenderTextProcessor::RenderTextProcessor() = default;
 RenderTextProcessor::~RenderTextProcessor() = default;
 RenderTextProcessor::RenderTextProcessor(RenderTextProcessor&&) noexcept = default;
 RenderTextProcessor& RenderTextProcessor::operator=(RenderTextProcessor&&) noexcept = default;
