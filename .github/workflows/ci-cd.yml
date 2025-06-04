@@ -2,10 +2,10 @@ name: CI/CD Pipeline
 
 on:
   push:
-    branches: [ main ]
     tags: ['v*']
+    branches: [main]
   pull_request:
-    branches: [ main ]
+    branches: [main]
 
 jobs:
   build-test-package:
@@ -34,6 +34,7 @@ jobs:
         # Создаем структуру пакета
         mkdir -p package/usr/bin
         
+        # Копируем бинарный файл
         cp build/StrategyPatternTests package/usr/bin/
         
         # Создаем файл управления пакетом
@@ -51,6 +52,8 @@ jobs:
         
         # Собираем пакет
         dpkg-deb --build package strategy-pattern.deb
+        
+        # Сохраняем путь для последующих шагов
         echo "DEB_PATH=$(pwd)/strategy-pattern.deb" >> $GITHUB_ENV
 
     - name: Upload build artifact
@@ -66,3 +69,46 @@ jobs:
     runs-on: ubuntu-latest
     if: startsWith(github.ref, 'refs/tags/')
     
+    steps:
+    - name: Download artifacts
+      uses: actions/download-artifact@v4
+      with:
+        name: strategy-pattern-package
+        path: artifacts
+
+    - name: Setup environment
+      run: |
+        # Извлекаем версию из тега
+        VERSION=${GITHUB_REF#refs/tags/v}
+        echo "VERSION=$VERSION" >> $GITHUB_ENV
+        echo "DEB_FILE=strategy-pattern-$VERSION.deb" >> $GITHUB_ENV
+
+    - name: Rename DEB package
+      run: |
+        mv artifacts/strategy-pattern.deb artifacts/${{ env.DEB_FILE }}
+
+    - name: Create Release
+      id: create_release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ github.ref }}
+        release_name: Release ${{ github.ref }}
+        draft: false
+        prerelease: false
+
+    - name: Upload Release Asset
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: artifacts/${{ env.DEB_FILE }}
+        asset_name: ${{ env.DEB_FILE }}
+        asset_content_type: application/vnd.debian.binary-package
+
+    - name: Verify upload
+      run: |
+        echo "DEB package uploaded: ${{ env.DEB_FILE }}"
+        echo "Release URL: ${{ steps.create_release.outputs.html_url }}"
