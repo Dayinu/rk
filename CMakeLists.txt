@@ -11,15 +11,14 @@ set(INCLUDE_DIR include)
 set(SRC_DIR src)
 set(TEST_DIR test)
 
-# Основная библиотека
 add_library(StrategyPatternLib STATIC
     ${SRC_DIR}/Payment/CreditCard.cpp
     ${SRC_DIR}/Payment/Order.cpp
     ${SRC_DIR}/Payment/PayByCreditCard.cpp
     ${SRC_DIR}/Payment/PayByPayPal.cpp
-    # ${SRC_DIR}/Render/RenderHtmlListStrategy.cpp  # Removed problematic file
+    ${SRC_DIR}/Render/RenderHtmlListStrategy.cpp 
     ${SRC_DIR}/Render/RenderMarkdownListStrategy.cpp
-    # ${SRC_DIR}/Render/RenderTextProcessor.cpp     # Removed problematic file
+    ${SRC_DIR}/Render/RenderTextProcessor.cpp  
     ${SRC_DIR}/Strategy/ConceptualExample.cpp
     ${SRC_DIR}/Strategy/ConceptualExampleModern.cpp
     ${SRC_DIR}/Strategy/RealWorldExample.cpp
@@ -41,24 +40,23 @@ target_link_libraries(StrategyPatternApp PRIVATE StrategyPatternLib)
 
 # Тесты
 enable_testing()
-find_package(GTest REQUIRED)
-include(GoogleTest)
 
-# Используем FetchContent для управления зависимостями GTest
+# Используем ТОЛЬКО FetchContent для GTest (убрали find_package)
 include(FetchContent)
 FetchContent_Declare(
-  googletest
-  GIT_REPOSITORY https://github.com/google/googletest.git
-  GIT_TAG v1.14.0  # Исправленный тег (было release-1.14.0)
+    googletest
+    GIT_REPOSITORY https://github.com/google/googletest.git
+    GIT_TAG v1.14.0
 )
 FetchContent_MakeAvailable(googletest)
 
-# Создаем тестовый исполняемый файл
+# Тестовый исполняемый файл
 add_executable(StrategyPatternTests ${TEST_DIR}/tests.cpp)
-target_link_libraries(StrategyPatternTests 
-    PRIVATE 
-    StrategyPatternLib 
+
+target_link_libraries(StrategyPatternTests PRIVATE
+    StrategyPatternLib
     GTest::gtest_main
+    GTest::gmock
 )
 
 # Добавление тестов в CTest
