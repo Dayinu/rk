@@ -1,6 +1,7 @@
 // ===========================================================================
 // RenderHtmlListStrategy.h
 // ===========================================================================
+#include "RenderListStrategy.h"
 
 class RenderHtmlListStrategy : public RenderListStrategy
 {
