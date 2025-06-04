@@ -2,6 +2,14 @@
 // RenderTextProcessor.h
 // ===========================================================================
 
+#include <memory>       // Для std::unique_ptr
+#include <sstream>      // Для std::ostringstream
+#include <string>       // Для std::string
+#include <vector>       // Для std::vector
+
+// Предварительное объявление, чтобы избежать циклических зависимостей
+class RenderListStrategy;
+
 class RenderTextProcessor
 {
 public:
