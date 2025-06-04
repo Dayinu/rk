@@ -5,7 +5,6 @@
 /**
  * Dummy credit card class
  */
-#include "PaymentStrategy.h"
 class CreditCard
 {
 private:
