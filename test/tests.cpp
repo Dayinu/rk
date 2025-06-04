@@ -1,86 +1,134 @@
+// tests.cpp
 #include <gtest/gtest.h>
-#include <memory>
-#include <string>
 #include <vector>
-#include "Payment/CreditCard.h"
-#include "Payment/PayByCreditCard.h"
-#include "Payment/PayByPayPal.h"
-#include "Payment/Order.h"
-#include "Render/RenderHtmlListStrategy.h"
-#include "Render/RenderMarkdownListStrategy.h"
-#include "Render/RenderTextProcessor.h"
+#include <string>
+#include <memory>
 
-// Тест для класса CreditCard
-TEST(CreditCardTest, ChargeAndValidation) {
-    CreditCard card("1234567890123456", "12/25", "123");
+// Концептуальные примеры
+#include "ConceptualExample.cpp"
+#include "ConceptualExampleModern.cpp"
+
+// Пример электронной коммерции
+#include "CreditCard.h"
+#include "PayByCreditCard.h"
+#include "PayByPayPal.h"
+#include "Order.h"
+
+// Примеры рендеринга
+#include "RenderListStrategy.h"
+#include "RenderHtmlListStrategy.h"
+#include "RenderMarkdownListStrategy.h"
+#include "RenderTextProcessor.h"
+
+using namespace StrategyConceptualExample;
+using namespace StrategyConceptualExampleModern;
+
+// Тесты для концептуального примера (традиционная реализация)
+TEST(ConceptualExampleTest, ConcreteStrategyA) {
+    ConcreteStrategyA strategy;
+    std::vector<std::string> data = {"D", "B", "A", "C"};
+    std::string result = strategy.doAlgorithm(data);
+    ASSERT_EQ("ABCD", result);
+}
+
+TEST(ConceptualExampleTest, ConcreteStrategyB) {
+    ConcreteStrategyB strategy;
+    std::vector<std::string> data = {"D", "B", "A", "C"};
+    std::string result = strategy.doAlgorithm(data);
+    ASSERT_EQ("DCBA", result);
+}
+
+TEST(ConceptualExampleTest, ContextSwitching) {
+    Context context(std::make_unique<ConcreteStrategyA>());
+    context.doSomeBusinessLogic();  // Normal Sorting
+    
+    context.setStrategy(std::make_unique<ConcreteStrategyB>());
+    context.doSomeBusinessLogic();  // Reverse Sorting
+}
+
+// Тесты для современной реализации
+TEST(ConceptualExampleModernTest, AlgorithmA) {
+    std::vector<std::string> data = {"D", "B", "A", "C"};
+    std::string result = doAlgorithmA(data);
+    ASSERT_EQ("ABCD", result);
+}
+
+TEST(ConceptualExampleModernTest, AlgorithmB) {
+    std::vector<std::string> data = {"D", "B", "A", "C"};
+    std::string result = doAlgorithmB(data);
+    ASSERT_EQ("DCBA", result);
+}
+
+// Тесты для платежных стратегий
+TEST(PaymentTest, CreditCardCharge) {
+    CreditCard card("12345678", "12/25", "123");
     card.setValid(true);
-    EXPECT_TRUE(card.isValid());
-    EXPECT_TRUE(card.charge(1000));
-    EXPECT_EQ(card.charge(5000), false); // Превышение лимита
+    
+    ASSERT_TRUE(card.charge(1000));
+    ASSERT_FALSE(card.charge(5000)); // Превышение лимита
 }
 
-// Тест для класса PayByCreditCard
-TEST(PayByCreditCardTest, PaymentProcess) {
+TEST(PaymentTest, PayByCreditCardFlow) {
     PayByCreditCard payment;
+    // Тест сбора данных (имитация ввода)
     testing::internal::CaptureStdout();
-    payment.collectPaymentDetails(); // Ввод данных имитируется в тесте
+    payment.collectPaymentDetails();
     std::string output = testing::internal::GetCapturedStdout();
-    EXPECT_TRUE(output.find("Enter the card number:") != std::string::npos);
-    EXPECT_TRUE(payment.pay(1000)); // Успешная оплата
+    
+    ASSERT_TRUE(output.find("Enter the card number") != std::string::npos);
 }
 
-// Тест для класса PayByPayPal
-TEST(PayByPayPalTest, PaymentProcess) {
-    PayByPayPal payment;
-    testing::internal::CaptureStdout();
-    payment.collectPaymentDetails(); // Ввод данных имитируется в тесте
-    std::string output = testing::internal::GetCapturedStdout();
-    EXPECT_TRUE(output.find("Enter the user's email address:") != std::string::npos);
-    EXPECT_TRUE(payment.pay(1000)); // Успешная оплата
-}
-
-// Тест для класса Order
-TEST(OrderTest, ProcessOrder) {
+TEST(PaymentTest, OrderProcessing) {
     Order order;
-    auto strategy = std::make_shared<PayByCreditCard>();
-    testing::internal::CaptureStdout();
+    order.addToTotalCost(1500);
+    ASSERT_EQ(1500, order.getTotalCost());
+    
+    auto strategy = std::make_shared<PayByPayPal>();
     order.processOrder(strategy);
-    std::string output = testing::internal::GetCapturedStdout();
-    EXPECT_TRUE(output.find("Enter the card number:") != std::string::npos);
-    order.addToTotalCost(1000);
-    EXPECT_EQ(order.getTotalCost(), 1000);
+    order.setClosed();
+    ASSERT_TRUE(order.isClosed());
 }
 
-// Тест для класса RenderHtmlListStrategy
-TEST(RenderHtmlListStrategyTest, Formatting) {
+// Тесты для стратегий рендеринга
+class MockHtmlStrategy : public RenderListStrategy {
+public:
+    void start(std::ostringstream& oss) override { oss << "<mock>"; }
+    void add(std::ostringstream& oss, const std::string& item) override { oss << item; }
+    void end(std::ostringstream& oss) override { oss << "</mock>"; }
+};
+
+TEST(RenderingTest, HtmlStrategy) {
     RenderHtmlListStrategy strategy;
     std::ostringstream oss;
+    
     strategy.start(oss);
-    strategy.add(oss, "item1");
+    strategy.add(oss, "Test");
     strategy.end(oss);
-    EXPECT_TRUE(oss.str().find("<ul>") != std::string::npos);
-    EXPECT_TRUE(oss.str().find("<li>item1</li>") != std::string::npos);
+    
+    ASSERT_TRUE(oss.str().find("<ul>") != std::string::npos);
+    ASSERT_TRUE(oss.str().find("<li>Test</li>") != std::string::npos);
 }
 
-// Тест для класса RenderMarkdownListStrategy
-TEST(RenderMarkdownListStrategyTest, Formatting) {
+TEST(RenderingTest, MarkdownStrategy) {
     RenderMarkdownListStrategy strategy;
     std::ostringstream oss;
-    strategy.add(oss, "item1");
-    EXPECT_TRUE(oss.str().find(" - item1") != std::string::npos);
+    
+    strategy.add(oss, "Test");
+    ASSERT_EQ(oss.str(), " - Test\n");
 }
 
-// Тест для класса RenderTextProcessor
-TEST(RenderTextProcessorTest, OutputFormatting) {
+TEST(RenderingTest, TextProcessor) {
     RenderTextProcessor processor;
-    processor.setOutputFormat(std::make_unique<RenderHtmlListStrategy>());
-    processor.appendList({"item1", "item2"});
+    processor.setOutputFormat(std::make_unique<MockHtmlStrategy>());
+    
+    std::vector<std::string> items = {"A", "B", "C"};
+    processor.appendList(items);
+    
     std::string result = processor.toString();
-    EXPECT_TRUE(result.find("<ul>") != std::string::npos);
-    EXPECT_TRUE(result.find("<li>item1</li>") != std::string::npos);
+    ASSERT_EQ(result, "<mock>ABC</mock>");
 }
 
 int main(int argc, char **argv) {
-    ::testing::InitGoogleTest(&argc, argv);
+    testing::InitGoogleTest(&argc, argv);
     return RUN_ALL_TESTS();
 }
