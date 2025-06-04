@@ -5,9 +5,7 @@
 /**
  * Concrete strategy. Implements credit card payment method.
  */
-
-class PayByCreditCard : public PaymentStrategy
-{
+class PayByCreditCard : public PaymentStrategy {
 private:
     std::unique_ptr<CreditCard> m_card;
 
