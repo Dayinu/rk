@@ -13,6 +13,7 @@ class RenderListStrategy; // Предварительное объявление
 class RenderTextProcessor
 {
 public:
+    RenderTextProcessor(); 
     // Объявляем специальные функции
     ~RenderTextProcessor(); // Деструктор
     RenderTextProcessor(RenderTextProcessor&&) noexcept; // Перемещающий конструктор
