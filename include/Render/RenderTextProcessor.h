@@ -1,18 +1,23 @@
 // ===========================================================================
 // RenderTextProcessor.h
 // ===========================================================================
+#pragma once
 
-#include <memory>       // Для std::unique_ptr
-#include <sstream>      // Для std::ostringstream
-#include <string>       // Для std::string
-#include <vector>       // Для std::vector
+#include <memory>
+#include <sstream>
+#include <string>
+#include <vector>
 
-// Предварительное объявление, чтобы избежать циклических зависимостей
-class RenderListStrategy;
+class RenderListStrategy; // Предварительное объявление
 
 class RenderTextProcessor
 {
 public:
+    // Объявляем специальные функции
+    ~RenderTextProcessor(); // Деструктор
+    RenderTextProcessor(RenderTextProcessor&&) noexcept; // Перемещающий конструктор
+    RenderTextProcessor& operator=(RenderTextProcessor&&) noexcept; // Перемещающее присваивание
+
     void setOutputFormat(std::unique_ptr<RenderListStrategy>&&);
     void appendList(const std::vector<std::string>&);
     std::string toString() const;
@@ -22,7 +27,3 @@ private:
     std::ostringstream m_oss;
     std::unique_ptr<RenderListStrategy> m_format;
 };
-
-// ===========================================================================
-// End-of-File
-// ===========================================================================
