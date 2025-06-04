@@ -69,6 +69,9 @@ jobs:
     runs-on: ubuntu-latest
     if: startsWith(github.ref, 'refs/tags/')
     
+    permissions:
+      contents: write  # Ключевое исправление!
+    
     steps:
     - name: Download artifacts
       uses: actions/download-artifact@v4
@@ -89,17 +92,17 @@ jobs:
 
     - name: Create Release
       id: create_release
-      uses: actions/create-release@v1
+      uses: actions/create-release@v2  # Используем v2 вместо v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        tag_name: ${{ github.ref }}
-        release_name: Release ${{ github.ref }}
+        tag_name: ${{ github.ref_name }}  # Используем ref_name вместо ref
+        release_name: Release ${{ github.ref_name }}
         draft: false
         prerelease: false
 
     - name: Upload Release Asset
-      uses: actions/upload-release-asset@v1
+      uses: actions/upload-release-asset@v2  # Используем v2 вместо v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
