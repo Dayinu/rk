@@ -2,8 +2,8 @@ name: CI/CD Pipeline
 
 on:
   push:
-    tags: ['v*']
     branches: [ main ]
+    tags: ['v*']
   pull_request:
     branches: [ main ]
 
@@ -34,8 +34,6 @@ jobs:
         # Создаем структуру пакета
         mkdir -p package/usr/bin
         
-        # Копируем реально существующий бинарный файл
-        # (замените StrategyPatternTests на фактическое имя вашего приложения)
         cp build/StrategyPatternTests package/usr/bin/
         
         # Создаем файл управления пакетом
@@ -53,11 +51,18 @@ jobs:
         
         # Собираем пакет
         dpkg-deb --build package strategy-pattern.deb
+        echo "DEB_PATH=$(pwd)/strategy-pattern.deb" >> $GITHUB_ENV
 
-    - name: Upload artifacts
+    - name: Upload build artifact
       uses: actions/upload-artifact@v4
       with:
         name: strategy-pattern-package
         path: |
-          strategy-pattern.deb
-          build/StrategyPatternTests  # Загружаем бинарный файл
+          ${{ env.DEB_PATH }}
+          build/StrategyPatternTests
+
+  create-release:
+    needs: build-test-package
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/')
+    
