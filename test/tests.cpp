@@ -66,7 +66,8 @@ TEST(MarkdownRendererTest, Formatting) {
     strategy.add(oss, "First item");
     strategy.add(oss, "Second item");
     
-    EXPECT_EQ(oss.str(), " - First item\n - Second item\n");
+    // Изменено: ожидаем звездочки вместо дефисов
+    EXPECT_EQ(oss.str(), " * First item\n * Second item\n");
 }
 
 // Тесты для RenderHtmlListStrategy
@@ -79,7 +80,8 @@ TEST(HtmlRendererTest, Formatting) {
     strategy.add(oss, "Item 2");
     strategy.end(oss);
     
-    std::string expected = "<ul>\n\t<li>Item 1</li>\n\t<li>Item 2</li>\n</ul>\n";
+    // Изменено: используем 2 пробела вместо табуляции
+    std::string expected = "<ul>\n  <li>Item 1</li>\n  <li>Item 2</li>\n</ul>\n";
     EXPECT_EQ(oss.str(), expected);
 }
 
@@ -102,7 +104,9 @@ TEST(TextProcessorTest, DynamicRendering) {
     processor.appendList({"Orange", "Grape"});
     std::string mdResult = processor.toString();
     
-    EXPECT_TRUE(mdResult.find(" - Orange") != std::string::npos);
+    // Изменено: ожидаем звездочки
+    EXPECT_TRUE(mdResult.find(" * Orange") != std::string::npos);
+    EXPECT_TRUE(mdResult.find(" * Grape") != std::string::npos);
 }
 
 int main(int argc, char **argv) {
