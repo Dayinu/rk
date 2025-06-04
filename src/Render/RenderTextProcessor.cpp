@@ -1,13 +1,12 @@
 #include "Render/RenderTextProcessor.h"
-#include "Render/RenderListStrategy.h"
-
+#include "Render/RenderListStrategy.h" 
 RenderTextProcessor::RenderTextProcessor() = default;
 RenderTextProcessor::~RenderTextProcessor() = default;
 RenderTextProcessor::RenderTextProcessor(RenderTextProcessor&&) noexcept = default;
 RenderTextProcessor& RenderTextProcessor::operator=(RenderTextProcessor&&) noexcept = default;
 
-void RenderTextProcessor::setOutputFormat(std::unique_ptr<RenderListStrategy>&& strategy) {
-    m_format = std::move(strategy);
+void RenderTextProcessor::setOutputFormat(std::unique_ptr<RenderListStrategy>&& format) {
+    m_format = std::move(format);
 }
 
 void RenderTextProcessor::appendList(const std::vector<std::string>& items) {
