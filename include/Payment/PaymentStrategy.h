@@ -5,6 +5,7 @@
 /**
  * common interface for all strategies
  */
+#pragma once
 class PaymentStrategy
 {
 public:
