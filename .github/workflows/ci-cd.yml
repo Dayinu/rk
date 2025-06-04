@@ -70,7 +70,7 @@ jobs:
     if: startsWith(github.ref, 'refs/tags/')
     
     permissions:
-      contents: write  # Ключевое исправление!
+      contents: write
     
     steps:
     - name: Download artifacts
@@ -85,24 +85,31 @@ jobs:
         VERSION=${GITHUB_REF#refs/tags/v}
         echo "VERSION=$VERSION" >> $GITHUB_ENV
         echo "DEB_FILE=strategy-pattern-$VERSION.deb" >> $GITHUB_ENV
+        echo "TAG_NAME=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV  # Добавлено
 
-    - name: Rename DEB package
+    - name: Rename and verify DEB package
       run: |
         mv artifacts/strategy-pattern.deb artifacts/${{ env.DEB_FILE }}
+        if [ ! -f "artifacts/${{ env.DEB_FILE }}" ]; then
+          echo "Error: DEB file not found after renaming!"
+          ls -la artifacts/
+          exit 1
+        fi
+        echo "DEB file size: $(du -h artifacts/${{ env.DEB_FILE }} | cut -f1)"
 
     - name: Create Release
       id: create_release
-      uses: actions/create-release@v2  # Используем v2 вместо v1
+      uses: actions/create-release@v1  # Исправлено на v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        tag_name: ${{ github.ref_name }}  # Используем ref_name вместо ref
-        release_name: Release ${{ github.ref_name }}
+        tag_name: ${{ env.TAG_NAME }}  # Используем имя тега
+        release_name: Release ${{ env.TAG_NAME }}
         draft: false
         prerelease: false
 
     - name: Upload Release Asset
-      uses: actions/upload-release-asset@v2  # Используем v2 вместо v1
+      uses: actions/upload-release-asset@v1  # Исправлено на v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
