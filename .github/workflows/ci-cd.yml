@@ -30,11 +30,14 @@ jobs:
 
     - name: Create DEB package
       run: |
+        # Создаем структуру пакета
         mkdir -p package/usr/bin
-        cp build/StrategyPatternApp package/usr/bin/
-        mkdir -p package/usr/share/strategy-pattern
-        cp -r Resources package/usr/share/strategy-pattern/
         
+        # Копируем реально существующий бинарный файл
+        # (замените StrategyPatternTests на фактическое имя вашего приложения)
+        cp build/StrategyPatternTests package/usr/bin/
+        
+        # Создаем файл управления пакетом
         mkdir -p package/DEBIAN
         cat > package/DEBIAN/control <<EOF
         Package: strategy-pattern
@@ -44,9 +47,10 @@ jobs:
         Architecture: amd64
         Maintainer: Your Name <your.email@example.com>
         Description: Strategy Pattern Example Application
-         This package contains the executable and resources for the Strategy Pattern example.
+         This package contains the executable for the Strategy Pattern example.
         EOF
         
+        # Собираем пакет
         dpkg-deb --build package strategy-pattern.deb
 
     - name: Upload artifacts
@@ -55,4 +59,4 @@ jobs:
         name: strategy-pattern-package
         path: |
           strategy-pattern.deb
-          build/StrategyPatternApp
+          build/StrategyPatternTests  # Загружаем бинарный файл
