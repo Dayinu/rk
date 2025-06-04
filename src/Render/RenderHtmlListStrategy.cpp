@@ -10,5 +10,5 @@ void RenderHtmlListStrategy::end(std::ostringstream& oss) {
 }
 
 void RenderHtmlListStrategy::add(std::ostringstream& oss, const std::string& item) {
-    oss << "  <li>" << item << "</li>\n";
+    oss << "\t<li>" << item << "</li>\n"; 
 }
