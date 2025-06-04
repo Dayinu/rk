@@ -1,15 +1,13 @@
 #include "Render/RenderTextProcessor.h"
-#include "Render/RenderListStrategy.h" // Полное определение базового класса
+#include "Render/RenderListStrategy.h"
 
-// Определения специальных функций
 RenderTextProcessor::RenderTextProcessor() = default;
 RenderTextProcessor::~RenderTextProcessor() = default;
 RenderTextProcessor::RenderTextProcessor(RenderTextProcessor&&) noexcept = default;
 RenderTextProcessor& RenderTextProcessor::operator=(RenderTextProcessor&&) noexcept = default;
 
-// Остальные методы
-void RenderTextProcessor::setOutputFormat(std::unique_ptr<RenderListStrategy>&& format) {
-    m_format = std::move(format);
+void RenderTextProcessor::setOutputFormat(std::unique_ptr<RenderListStrategy>&& strategy) {
+    m_format = std::move(strategy);
 }
 
 void RenderTextProcessor::appendList(const std::vector<std::string>& items) {
